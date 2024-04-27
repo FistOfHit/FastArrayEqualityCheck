@@ -2,6 +2,8 @@
 A collection of CUDA kernels I wrote, just for fun
 
 ## Future work
+- Implement cantor and sszduzik pairings for 16 and 32 bit integers
+- modify butterfly pattern for log(n) compute
 - Verify LSH algorithm and determine probability of collisions for large numbers of trials
 - Make python library and pybinds
 - Scale to all available GPUs
