@@ -44,7 +44,7 @@ __device__ u_int64_t szudzikPairing(int32_t a, int32_t b) {
 
 
 int main() {
-    const auto array_size = 1 << 20;  // 1 million elements
+    const auto array_size = 10;
     const auto seed = 42;
 
     // Allocate memory on host

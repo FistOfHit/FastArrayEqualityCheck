@@ -30,10 +30,10 @@ integers into a single 2N-byte integer.
 
 @return: The paired integer
 */
-std::uint64_t szudzik_pairing(std::int32_t x, std::int32_t y) {
+std::int64_t szudzik_pairing(std::int32_t x, std::int32_t y) {
     // 4N bytes for intermediates
-    std::uint64_t A = (std::int64_t)(x >= 0 ? 2 * (std::int64_t)x : -2 * (std::int64_t)x - 1);
-    std::uint64_t B = (std::int64_t)(y >= 0 ? 2 * (std::int64_t)y : -2 * (std::int64_t)y - 1);
+    std::uint64_t A = (std::uint64_t)(x >= 0 ? 2 * (std::int64_t)x : -2 * (std::int64_t)x - 1);
+    std::uint64_t B = (std::uint64_t)(y >= 0 ? 2 * (std::int64_t)y : -2 * (std::int64_t)y - 1);
 
     // 2N bytes for final result
     std::int64_t C = (std::int64_t)((A >= B ? A * A + A + B : A + B * B) / 2);
