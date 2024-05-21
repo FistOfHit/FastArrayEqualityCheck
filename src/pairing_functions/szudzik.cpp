@@ -1,5 +1,6 @@
 #include "szudzik.h"
 
+
 uint64_t szudzikPairing(int32_t a, int32_t b) {
     // Map the input integers to non-negative integers
     uint64_t A = a >= 0 ? 2 * static_cast<uint64_t>(a) : -2 * static_cast<uint64_t>(a) - 1;
