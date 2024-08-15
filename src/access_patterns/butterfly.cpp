@@ -1,3 +1,4 @@
+#include "access_patterns/butterfly.h"
 #include <cmath>
 #include <cstdint>
 #include <functional>
