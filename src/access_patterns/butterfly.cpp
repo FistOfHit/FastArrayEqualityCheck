@@ -1,9 +1,18 @@
+/**
+ * @file butterfly.cpp
+ * @brief Implementation of the butterfly access pattern.
+ *
+ * This file contains the implementation of the butterfly access pattern
+ * for 1D arrays. The butterfly pattern is an efficient way to compare or
+ * combine elements in an array, often used in fast Fourier transforms
+ * and other divide-and-conquer algorithms.
+ */
+
 #include "access_patterns/butterfly.h"
 #include <cmath>
 #include <cstdint>
 #include <functional>
 #include <vector>
-
 
 void butterfly_1d(
     std::vector<int32_t>& array,

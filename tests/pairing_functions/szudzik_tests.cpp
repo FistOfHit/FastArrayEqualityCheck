@@ -1,3 +1,13 @@
+/**
+ * @file szudzik_tests.cpp
+ * @brief Unit tests for the Szudzik pairing function.
+ *
+ * This file contains unit tests for the Szudzik pairing function
+ * implementation. It uses the Google Test framework to test various
+ * scenarios including positive numbers, negative numbers, zero values,
+ * and edge cases with int32 limits.
+ */
+
 #include "pairing_functions/szudzik.h"
 #include <gtest/gtest.h>
 #include <iostream>
