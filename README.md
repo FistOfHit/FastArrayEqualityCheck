@@ -1,87 +1,181 @@
 # FastArrayEqualityCheck
 
-Fast equality checking for large arrays.
+`FastArrayEqualityCheck` is the repository for `FAE`, a C++20 library for
+probabilistic array fingerprinting.
 
-## Sub-linear in time (but not in space)
+The library computes deterministic fingerprints for integral arrays and exposes
+utilities for comparing those fingerprints. `FAE` does not claim proof of array
+equality or inequality. Its public API only reports whether two produced
+fingerprints match or differ under the configured algorithm.
 
-Elementwise comparison is fast, but for very large arrays, a less direct comparison of array elements could be faster. This library maps pairs of elements to a single number and then hashes it, repeating this process until all elements of an array have been processed into a single hash. Once arrays A and B have been hashed, A == B becomes instant.
+## Status
 
-## Building
+This repository currently provides:
 
-### Prequisites
+- A primary high-level API for fingerprinting and comparing integral arrays.
+- Advanced low-level primitives for Szudzik pairing and 64-bit pairwise
+  folding.
+- CMake packaging, unit tests, examples, generated API docs, and CI support.
+- Benchmark and collision-study executables for empirical evaluation.
 
-- C++20 compatible compiler (e.g., GCC 10+, Clang 10+, MSVC 2019+)
-- CMake 3.15 or higher
-- Google Test framework
+## Guarantees
 
-### Build steps
+`FAE` is explicitly probabilistic.
 
-- Clone the repository:
+- `fingerprints_match` means two arrays produced the same fingerprint under the
+  configured algorithm.
+- `fingerprints_differ` means two arrays produced different fingerprints under
+  the configured algorithm.
+- Neither result is described as a proof about the original arrays.
 
-    ```Bash
-    git clone https://github.com/yourusername/FastArrayEqualityCheck.git
-    cd FastArrayEqualityCheck
-    ```
+The library is designed to be deterministic and easy to reason about, not to
+replace cryptographic or exact equality workflows.
 
-- Run make to build:
+## API Stability Notes
 
-```Bash
-make all
+- `Fingerprint` is a stable source-level API type for v1.
+- `Fingerprint` is not a stable serialized wire format in v1.
+- Raw `Fingerprint` bytes should not be persisted or exchanged across versions,
+  platforms, or ABIs.
+- Fingerprints are intended to be compared only when they were produced from
+  the same element type, seed, and algorithm configuration.
+- The default algorithm in v1 is `fae::FingerprintAlgorithm::hash_combine`.
+- `fae::FingerprintAlgorithm::legacy_fold` remains available as an opt-in
+  comparison path.
+- `fae::FingerprintAlgorithm::cantor_mix` is available as a public opt-in
+  alternative for side-by-side evaluation without changing the default.
+- `fae::FingerprintAlgorithm::tuple_mix` is available as a public opt-in
+  alternative for side-by-side evaluation without changing the default.
+
+## Quick Start
+
+```cpp
+#include <fae/fae.h>
+#include <cstdint>
+#include <span>
+#include <vector>
+
+int main() {
+    const std::vector<std::int32_t> lhs {1, 2, 3, 4};
+    const std::vector<std::int32_t> rhs {1, 2, 3, 4};
+    const fae::FingerprintConfig config {.seed = 0};
+
+    const fae::Fingerprint fingerprint = fae::fingerprint(std::span(lhs), config);
+    const fae::FingerprintComparison comparison =
+        fae::compare_fingerprints(std::span(lhs), std::span(rhs), config);
+
+    return fingerprint.length == 4 &&
+                   comparison == fae::FingerprintComparison::fingerprints_match
+               ? 0
+               : 1;
+}
 ```
 
-### Running Tests
+## Build
 
-After building the project, you can run the tests using:
+### Requirements
 
-```Bash
-make test
+- CMake 3.21 or newer
+- A C++20 compiler
+
+### Configure, build, and test
+
+```bash
+cmake -S . -B build -DFAE_BUILD_TESTS=ON -DFAE_BUILD_EXAMPLES=ON
+cmake --build build
+ctest --test-dir build --output-on-failure
 ```
 
-## Usage
+### Build API docs
 
-## Contributing
+```bash
+cmake -S . -B build -DFAE_BUILD_DOCS=ON
+cmake --build build --target docs
+```
 
-We welcome contributions to the FastArrayEqualityCheck project! Whether you're
-fixing bugs, improving documentation, or proposing new features, your efforts
-are appreciated.
+### Build and run the measurement tools
 
-### Getting Started
+```bash
+cmake -S . -B build -DFAE_BUILD_BENCHMARKS=ON
+cmake --build build
+./build/fae_benchmark
+./build/fae_collision_study
+```
 
-- Fork the repository on GitHub.
-- Clone your fork locally.
-- Create a new branch for your contribution.
-- Make your changes and commit them with a clear, descriptive commit message.
-- Push your changes to your fork on GitHub.
-- Submit a pull request to the main repository.
+For a reduced CI-style pass:
 
-### Guidelines
+```bash
+./build/fae_benchmark --profile=smoke
+./build/fae_collision_study --profile=smoke
+```
 
-- Follow the existing code style and conventions.
-- Write clear, concise commit messages.
-- Add tests for new features or bug fixes.
-- Update documentation as necessary.
-- Be respectful and constructive in discussions and code reviews.
+For a larger local campaign:
 
-If you're unsure about anything, don't hesitate to open an issue to discuss
-your ideas or ask questions.
-Thank you for considering contributing to FastArrayEqualityCheck. Your
-involvement helps make this project better for everyone!
+```bash
+./build/fae_benchmark --profile=deep
+./build/fae_collision_study --profile=deep --seed=123456789
+```
+
+To scaffold a new versioned results snapshot from fresh measurements:
+
+```bash
+scripts/create_results_snapshot.sh deep-baseline --profile=deep
+```
+
+To promote a checked-in snapshot as the current baseline:
+
+```bash
+bash scripts/promote_results_snapshot.sh docs/results/2026-03-27-deep-baseline.md
+```
+
+### Install
+
+```bash
+cmake -S . -B build
+cmake --build build
+cmake --install build --prefix ./install
+```
+
+The package exports a CMake target that downstream projects can consume with
+`find_package(fae CONFIG REQUIRED)`.
+
+## Repository Layout
+
+- `include/fae/`: public headers
+- `src/`: library implementation
+- `tests/`: unit tests and package smoke test consumer
+- `examples/`: small usage examples
+- `docs/`: narrative documentation
+- `cmake/`: packaging and test helper scripts
+- `benchmarks/`: empirical throughput and collision-study tools
+- `scripts/`: local project helpers
+
+## Documentation
+
+- Agent guide: `AGENTS.md`
+- API overview: `docs/api.md`
+- AI operator guide: `docs/ai-agent-guide.md`
+- Architecture notes: `docs/architecture.md`
+- Baseline results: `docs/benchmark-baseline.md`
+- Results archive: `docs/results/index.md`
+- Empirical evaluation: `docs/empirical-evaluation.md`
+- Format and stability notes: `docs/fingerprint-format.md`
+- Probabilistic semantics: `docs/probabilistic-model.md`
+- Project backlog: `TODO.md`
+- Contributing guide: `CONTRIBUTING.md`
+
+## Future Pairing And Folding Work
+
+`FAE` currently implements Szudzik pairing as its exact advanced pairing
+primitive. The docs also call out candidate future additions:
+
+- Cantor pairing
+- Rosenberg-Strong pairing
+- Morton / Z-order interleaving
+- Additional ordered hash-combine variants
+
+These remain documented extension points rather than implemented public APIs.
 
 ## License
 
-This project is licensed under the MIT License. See the LICENSE file
-for details.
-
-## Future work
-
-- Verify LSH algorithm and determine probability of collisions for large numbers of trials
-- Make python library and pybinds
-- Scale to all available GPUs
-- option to run only on some GPUs
-- CPU implementation + comparative benchmarks
-- automatically compile to arch of GPUs and CUDA version
-- pypy
-- compile on pip install
-- smarter tiling and hashing with small fragments to avoid host-device transfers
-- adapt to arrays stored in disk - mmap and then load on demand
-- Develop a GPU optimized hashing algorithm - draw ideas from crypto mining perhaps?
+This project is licensed under the MIT License. See `LICENSE` for details.

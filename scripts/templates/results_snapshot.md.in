@@ -1,0 +1,43 @@
+# @DATE@ @TITLE@
+
+This file was scaffolded by `scripts/create_results_snapshot.sh`.
+
+Review the captured artifacts, condense the relevant findings into this
+document, and then update `docs/benchmark-baseline.md` and
+`docs/results/index.md` if this snapshot becomes the new checked-in baseline.
+
+## Environment
+
+- Date: @DATE@
+- Profile: @PROFILE@
+- Platform: @PLATFORM@
+- Compiler family used by the build: @COMPILER@
+- Build directory: `@BUILD_DIR@`
+- Capture script: `scripts/create_results_snapshot.sh`
+
+## Build flow
+
+```bash
+@BUILD_FLOW@
+```
+
+## Raw artifacts
+
+- Benchmark output: `@BENCHMARK_ARTIFACT@`
+- Collision output: `@COLLISION_ARTIFACT@`
+
+## High-level findings
+
+- Replace this placeholder with the main takeaways from the run.
+
+## Throughput excerpt
+
+Select the most relevant rows from `@BENCHMARK_ARTIFACT@`.
+
+## Collision excerpt
+
+Summarize the most relevant rows from `@COLLISION_ARTIFACT@`.
+
+## Interpretation
+
+Explain whether this run changes the current algorithm story.

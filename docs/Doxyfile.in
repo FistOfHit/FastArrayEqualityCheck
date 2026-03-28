@@ -1,0 +1,25 @@
+PROJECT_NAME           = "FAE"
+PROJECT_BRIEF          = "Probabilistic array fingerprinting for integral arrays"
+OUTPUT_DIRECTORY       = @CMAKE_CURRENT_SOURCE_DIR@/docs/api
+GENERATE_HTML          = YES
+GENERATE_LATEX         = NO
+EXTRACT_ALL            = YES
+EXTRACT_PRIVATE        = NO
+QUIET                  = YES
+WARN_IF_UNDOCUMENTED   = YES
+INPUT                  = @CMAKE_CURRENT_SOURCE_DIR@/include/fae \
+                         @CMAKE_CURRENT_SOURCE_DIR@/README.md \
+                         @CMAKE_CURRENT_SOURCE_DIR@/docs/api.md \
+                         @CMAKE_CURRENT_SOURCE_DIR@/docs/architecture.md \
+                         @CMAKE_CURRENT_SOURCE_DIR@/docs/benchmark-baseline.md \
+                         @CMAKE_CURRENT_SOURCE_DIR@/docs/empirical-evaluation.md \
+                         @CMAKE_CURRENT_SOURCE_DIR@/docs/fingerprint-format.md \
+                         @CMAKE_CURRENT_SOURCE_DIR@/docs/probabilistic-model.md \
+                         @CMAKE_CURRENT_SOURCE_DIR@/docs/results
+FILE_PATTERNS          = *.h *.md
+RECURSIVE              = YES
+USE_MDFILE_AS_MAINPAGE = @CMAKE_CURRENT_SOURCE_DIR@/README.md
+JAVADOC_AUTOBRIEF      = YES
+GENERATE_TREEVIEW      = YES
+FULL_SIDEBAR           = YES
+STRIP_FROM_PATH        = @CMAKE_CURRENT_SOURCE_DIR@
